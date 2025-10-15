@@ -50,7 +50,7 @@ if 'all_articles' not in st.session_state:
 with st.form("search_form"):
     st.subheader("🔍 Parâmetros de Busca")
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     
     with col1:
         tec_terms = st.multiselect(
@@ -64,15 +64,6 @@ with st.form("search_form"):
             "Termos Ambientais",
             params.environment,
             help="Selecione termos ambientais relacionados"
-        )
-    
-    with col3:
-        # Filtro de anos (opcional)
-        all_years = [str(year) for year in range(2015, 2027)]
-        selected_years = st.multiselect(
-            "Filtrar Anos (opcional)",
-            all_years,
-            help="Deixe vazio para incluir todos os anos"
         )
     
     # Botão centralizado e estilizado
@@ -97,8 +88,7 @@ if submitted:
             # Buscar TODOS os artigos (sem filtro de ano)
             all_articles = find_complete_articles(tec_terms_processed, env_terms_processed)
             st.session_state.all_articles = all_articles
-            st.session_state.initial_years = selected_years
-            st.session_state.selected_years = selected_years
+            st.session_state.selected_years = []  # Inicializa vazio
 
 # Se já tem dados carregados, permitir filtro dinâmico de anos
 if st.session_state.all_articles is not None:
@@ -149,7 +139,7 @@ if st.session_state.all_articles is not None:
     else:
         # Métricas principais
         total_articles = sum(len(v) for v in available_articles.values())
-        years_range = [str(y) for y in available_articles.keys()]
+        years_range = f"{min(available_articles.keys())} - {max(available_articles.keys())}"
         avg_per_year = total_articles / len(available_articles) if len(available_articles) > 0 else 0
         
         st.success(f"✅ Análise concluída! {total_articles} artigos encontrados no período selecionado.")
@@ -159,7 +149,7 @@ if st.session_state.all_articles is not None:
         with col1:
             st.metric("📚 Total de Artigos", total_articles)
         with col2:
-            st.metric("📅 Período", ", ".join(years_range))
+            st.metric("📅 Período", years_range)
         with col3:
             st.metric("📊 Média/Ano", f"{avg_per_year:.1f}")
         with col4:
@@ -238,23 +228,13 @@ if st.session_state.all_articles is not None:
             
             if data:
                 # Slider para controlar número de combinações (com key única para evitar reset)
-                if (min(30, len(data)) == min(15, len(data))):
-                    top_n = st.slider(
-                        "Número de combinações a exibir:", 
-                        5, 
-                        0, 
-                        1,
-                        key="top_n_slider"
-                    )
-
-                else:
-                    top_n = st.slider(
-                        "Número de combinações a exibir:", 
-                        5, 
-                        min(30, len(data)), 
-                        min(15, len(data)),
-                        key="top_n_slider"
-                    )
+                top_n = st.slider(
+                    "Número de combinações a exibir:", 
+                    5, 
+                    min(30, len(data)), 
+                    min(15, len(data)),
+                    key="top_n_slider"
+                )
                 
                 fig_b = plot_term_tuples(data, top_n=top_n, title=f"Combinações de Termos ({len(selected_years)} anos)")
                 st.plotly_chart(fig_b, use_container_width=True)
