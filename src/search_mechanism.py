@@ -15,7 +15,7 @@ def load_json_data(path_file):
         return json.load(file)
     
 def find_terms(tec, env):
-    year_ocurrencies = load_json_data("terms-by-year-complete.json")
+    year_ocurrencies = load_json_data("src/terms-by-year-complete.json")
     founded_articles = {}
 
     for year, articles in year_ocurrencies.items():
