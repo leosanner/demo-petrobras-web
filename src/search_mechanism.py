@@ -34,7 +34,7 @@ def find_terms(tec, env):
 
 def find_complete_articles(tec, env):
     articles = find_terms(tec, env)
-    complete_data = load_json_data("complete-unique-results-scopus.json")
+    complete_data = load_json_data("src/complete-unique-results-scopus.json")
     r = {}
     for year, art_ in articles.items():
 
@@ -56,7 +56,7 @@ def find_complete_articles(tec, env):
 def year_term_tuples():
     """Tuples containing the combinations of technology and environment keywords grouped by year"""
 
-    year_ocurencies = load_json_data("terms-by-year-complete.json")
+    year_ocurencies = load_json_data("src/terms-by-year-complete.json")
     year_term_set = {}
 
     for year, articles in year_ocurencies.items():
